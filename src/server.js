@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import userRoutes from "./routes/user.routes.js";
 
 dotenv.config();
 
@@ -12,6 +13,12 @@ app.use(express.json());
 app.get("/health", (req, res) => {
   res.json({ ok: true, message: "Smart Study Group Matcher API running" });
 });
+
+app.use("/users", userRoutes);
+
+
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
