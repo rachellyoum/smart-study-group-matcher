@@ -1,1 +1,1 @@
-# smart-study-matcher
+# smart-study-group-matcher
