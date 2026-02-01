@@ -1,5 +1,5 @@
 import { prisma } from "../db/prisma.js";
-import { totalOverlapMinutes, overlapScore } from "../services/matching.service.js";
+import { totalOverlapMinutes, overlapScore, overlapBreakdownByDay } from "../services/matching.service.js";
 
 // GET /match
 export async function getMatches(req, res) {
@@ -61,20 +61,33 @@ export async function getMatches(req, res) {
     // 4) Score + rank
     const ranked = others
       .map((other) => {
-        const overlapMins = totalOverlapMinutes(requesterBlocks, other.availability ?? []);
+        const otherBlocks = other.availability ?? [];
+        const overlapMins = totalOverlapMinutes(requesterBlocks, otherBlocks);
+        const breakdown = overlapBreakdownByDay(requesterBlocks, otherBlocks);
         const score = overlapScore(overlapMins);
+
+        const bestDay = Object.entries(breakdown).sort((a, b) => b[1] - a[1])[0];
+        const reason =
+            overlapMins === 0
+                ? "No overlapping availability yet"
+                : bestDay
+                    ? `Most overlap on ${bestDay[0]} (${bestDay[1]} mins)`
+                    : `Total overlap ${overlapMins} mins`;
 
         return {
           user: { id: other.id, name: other.name, email: other.email },
           overlapMinutes: overlapMins,
+          overlapByDay: breakdown,
           score,
+          reason,
         };
       })
       .sort((a, b) => b.score - a.score);
 
     return res.json({
       ok: true,
-      requester: { userId, courseId },
+      requester: { userId },
+      course: { id: course.id, code: course.code, term: course.term },
       results: ranked,
     });
   } catch (err) {
