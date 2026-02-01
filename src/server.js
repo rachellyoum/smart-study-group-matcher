@@ -2,6 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.routes.js";
+import courseRoutes from "./routes/course.routes.js";
+import enrollmentRoutes from "./routes/enrollment.routes.js"
+import availabilityRoutes from "./routes/availability.routes.js";
+import matchRoutes from "./routes/match.routes.js";
 
 dotenv.config();
 
@@ -15,9 +19,10 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/users", userRoutes);
-
-
-
+app.use("/courses", courseRoutes);
+app.use("/enrollments", enrollmentRoutes);
+app.use("/availability", availabilityRoutes);
+app.use("/match", matchRoutes);
 
 
 const PORT = process.env.PORT || 3000;

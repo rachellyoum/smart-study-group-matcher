@@ -1,4 +1,3 @@
-import { error } from "console";
 import { prisma } from "../db/prisma.js";
 
 // POST /users
